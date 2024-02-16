@@ -1,13 +1,27 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {SafeAreaView} from 'react-native';
-import Splash from './src/screens/auth/splash';
+import Signin from './src/screens/auth/Signin';
+
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import config from "./config";
 
 const App = () => {
-  return (
-    <SafeAreaView>
-      <Splash />
-    </SafeAreaView>
-  )
+  const {webClientId, iosClientId} = config;
+
+    useEffect(() => {
+      GoogleSignin.configure({
+        scopes: ['https://www.googleapis.com/auth/drive.readonly'],
+        webClientId: webClientId,
+        offlineAccess: true,
+        iosClientId: iosClientId,
+      });
+    }, []);
+
+    return (
+      <SafeAreaView>
+        <Signin/>
+      </SafeAreaView>
+    )
 }
 
-export default App
+export default React.memo(App)
