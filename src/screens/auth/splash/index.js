@@ -2,13 +2,23 @@ import React from "react";
 import {
     Text,
     View,
-    Image
+    Image,
+    Pressable
 } from "react-native";
 import Button from "../../../components/Button";
 import {styles} from "./styles";
-import Pressable from "react-native/Libraries/Components/Pressable/Pressable";
 
-const Splash = () => {
+const Splash = ({navigation}) => {
+    console.log('navigation => ', navigation);
+
+    const onSignup = () => {
+        navigation.navigate('Signup')
+    }
+
+    const onSignin = () => {
+        navigation.navigate('Signin')
+    }
+
     return (
         <View style={styles.container}>
             <Image resizeMode="cnntain" style={styles.image} source={require('../../../assets/splash_image.png')}/>
@@ -19,9 +29,9 @@ const Splash = () => {
                 <Text style={styles.title}>Here!</Text>
             </View>
 
-            <Button title="Sign Up" />
+            <Button onPress={onSignup} title="Sign Up" />
 
-            <Pressable>
+            <Pressable onPress={onSignin}>
                 <Text style={styles.footerText}>Sign In</Text>
             </Pressable>
         </View>
