@@ -2,7 +2,7 @@ import React from "react";
 import {Pressable, Image, Text} from "react-native";
 import {styles} from "./styles";
 
-constProductHomeItem = ({title, image, price, onPress}) => {
+const ProductHomeItem = ({title, image, price, onPress}) => {
     return (
         <Pressable onPress={onPress} style={styles.container}>
             <Image style={styles.image} source={{uri: image}}/>
@@ -12,4 +12,4 @@ constProductHomeItem = ({title, image, price, onPress}) => {
     )
 }
 
-export default React.memo(constProductHomeItem)
+export default React.memo(ProductHomeItem)
