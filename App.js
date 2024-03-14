@@ -1,117 +1,101 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
+import React, {useEffect} from 'react';
+import {Image} from 'react-native';
+import {colors} from "./src/utils/colors";
 
-import React from 'react';
-import type {Node} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import config from "./config";
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+import Signin from './src/screens/auth/Signin';
+import Signup from './src/screens/auth/Signup';
+import Splash from './src/screens/auth/splash';
 
-/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
- * LTI update could not be added via codemod */
-const Section = ({children, title}): Node => {
-  const isDarkMode = useColorScheme() === 'dark';
+import Home from './src/screens/app/Home';
+import Favorites from './src/screens/app/Favorites';
+import Profile from './src/screens/app/Profile';
+
+import ProductDetails from './src/screens/app/ProductDetails';
+
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+
+import {SafeAreaProvider} from 'react-native-safe-area-context';
+
+const Stack = createNativeStackNavigator();
+const Tab = createBottomTabNavigator();
+
+const Tabs = () => {
   return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
+    <Tab.Navigator screenOptions={({route}) => ({
+      tabBarIcon: ({focused, color, size}) => {
+        let icon;
+
+        if (route.name === 'Home') {
+          icon = focused
+          ? require('./src/assets/tabs/home_active.png')
+          : require('./src/assets/tabs/home.png');
+        } else if (route.name === 'Favorites') {
+          icon = focused
+          ? require('./src/assets/tabs/bookmark_active.png')
+          : require('./src/assets/tabs/bookmark.png');
+        } else if (route.name === 'Profile') {
+          icon = focused
+          ? require('./src/assets/tabs/profile_active.png')
+          : require('./src/assets/tabs/profile.png');
+        }
+        return <Image style={{width: 22, height: 24}} source={icon} />;
+      },
+      headerShown: false,
+      tabBarShowLabel: false,
+      tabBarStyle: {borderTopColor: colors.lightGray}
+    })}
+    >
+      <Tab.Screen name="Home" component={Home} />
+      <Tab.Screen name="Favorites" component={Favorites} />
+      <Tab.Screen name="Profile" component={Profile} />
+    </Tab.Navigator>
   );
-};
+}
 
-const App: () => Node = () => {
-  const isDarkMode = useColorScheme() === 'dark';
+const App = () => {
+  const {webClientId, iosClientId} = config;
+  const isSignedIn = true;
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
+    useEffect(() => {
+      GoogleSignin.configure({
+        scopes: ['https://www.googleapis.com/auth/drive.readonly'],
+        webClientId: webClientId,
+        offlineAccess: true,
+        iosClientId: iosClientId,
+      });
+    }, []);
 
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.js</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-};
+    const theme = {
+      colors: {
+        background: colors.white
+      }
+    }
 
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
+    return (
+      <SafeAreaProvider>
+        <NavigationContainer theme={theme}>
+          <Stack.Navigator>
+            { isSignedIn ? (
+              <>
+                <Stack.Screen name="Tabs" component={Tabs} options={{headerShown: false}} />
+                <Stack.Screen name="ProductDetails" component={ProductDetails} options={{headerShown: false}}/>
+              </>
+            ) : (
+              <>
+                <Stack.Screen name="Splash" component={Splash} options={{headerShown: false}}/>
+                <Stack.Screen name="Signup" component={Signup} options={{headerShown: false}}/>
+                <Stack.Screen name="Signin" component={Signin} options={{headerShown: false}}/>
+              </>
+            )}
+          </Stack.Navigator>
+        </NavigationContainer>
+      </SafeAreaProvider>
+    )
+}
 
-export default App;
+export default React.memo(App)
