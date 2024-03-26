@@ -59,5 +59,8 @@ export const styles = StyleSheet.create({
     backIcon: {
         width: 20,
         height: 20
+    },
+    button: {
+        flex: 1
     }
 })
